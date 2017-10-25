@@ -62,8 +62,6 @@ This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](http
 
 #### 3. Create file index.js
 
-  a. Create file **index.js**
-
   ```javascript
   'use strict'
 
@@ -98,6 +96,12 @@ This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](http
     console.log('running on port', app.get('port'))
   })
   ```
+
+#### 4. Run server on index.js
+
+```javascript
+node index.js
+```
 
 ---
 
