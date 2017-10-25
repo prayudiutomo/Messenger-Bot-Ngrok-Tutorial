@@ -1,51 +1,72 @@
-# How to build Facebook BOT Messenger with Ngrok
+# Facebook Messenger Bot with Ngrok
 
-This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](https://github.com/fb-masterclass-jakarta/step-create-bot-messenger)
+This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](https://github.com/fb-masterclass-jakarta/step-create-bot-messenger) and [jw84/messenger-bot-tutorial](https://github.com/jw84/messenger-bot-tutorial)
 
-## What is needed?
+---
+
+### WHAT IS NEEDED?
+
+---
 
 - NodeJS
 - Facebook Page
 - Facebook App
 - Webhook Service
-- Ngrok (*optional*)
+- Ngrok
 
+---
 
-## **Step 1**
+### STEP I: BUILD THE SERVER
 
-### Install NodeJS, NPM and Express
+#### 1. Install NodeJS, NPM and Express
 
-1. Download and install **NodeJS** from official website: https://nodejs.org/.
+a. Download and install **NodeJS** from official website: https://nodejs.org/.
 
-2. Check version.
+b. Check version.
 ```sh
 node -v
 ```
 
-3. Create directory and create service with Express.
+c. Install latest **npm**
 ```sh
-mkdir bot
-cd bot
+npm install npm -g
+```
+
+d. Create directory anywhere
+```sh
+mkdir myBot
+cd myBot
 npm init
+```
+
+e. Install Express is for the server, request is for sending out messages and body-parser is to process messages
+```sh
 npm install express request body-parser --save
 ```
 
-## **Step 2**
 
-### Install and run Ngrok
+#### 2. Install and Run Ngrok
 
-1. Download and install **Ngrok** from official website: https://ngrok.com/
+a. Download and install **Ngrok** from official website: https://ngrok.com/
 
-2. Unzip from a terminal to any directory. On Windows, just double click ngrok.zip.
+b. Unzip from a terminal to any directory. On Windows, just double click ngrok.zip.
 ```sh
 unzip /path/to/ngrok.zip
 ```
 
-## **Step 3**
+c. Start the **ngrok**
+```sh
+ngrok http 5000
+```
 
-### Create file **index.js**
+
+#### 3. Create file index.js
+
+a. Create file **index.js**
 
 ```javascript
+'use strict'
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
@@ -53,14 +74,18 @@ const app = express()
 
 app.set('port', (process.env.PORT || 5000))
 
+// Process application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}))
 
+// Process application/json
 app.use(bodyParser.json())
 
+// Index route
 app.get('/', function (req, res) {
-	res.send('Masterclass Facebook Jakarta - Example Webhook')
+	res.send('Hello world, I am a chat bot')
 })
 
+// for Facebook verification
 app.get('/webhook/', function (req, res) {
 	if (req.query['hub.verify_token'] === 'make_indonesian_great_again') {
 		res.send(req.query['hub.challenge'])
@@ -68,47 +93,41 @@ app.get('/webhook/', function (req, res) {
 	res.send('Error, wrong token')
 })
 
+// Spin up the server
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
 })
-
 ```
 
+---
 
-## **Step 4**
+### STEP II: SETUP FACEBOOK PAGE AND APP
 
-### Create Facebook Page
+#### 1. Create Facebook Page
 
-1. Click https://www.facebook.com/pages/create
+a. Click https://www.facebook.com/pages/create
 
+#### 2. Create Facebook App
 
-## **Step 5**
+a. Click https://developers.facebook.com/apps/
 
-### Create Facebook App
+b. Add Product **Facebook Messenger**
 
-1. Click https://developers.facebook.com/apps/
-
-2. Add Product **Facebook Messenger**
-
-
-## **Step 6**
-
-### Test connection
-
-```
-curl -X POST "https://graph.facebook.com/v2.10/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
+c. Test connection
+```sh
+curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
 ```
 
-## **Step 7**
+---
 
-### Add AccessToken 
+### STEP III: SETUP THE BOT
+
+#### 1. Add AccessToken
 ```javascript
 const token = "<PAGE_ACCESS_TOKEN>"
 ```
 
-## **Step 8**
-
-### Add bot sending message
+#### 1. Add an API endpoint to index.js to process messages
 ```javascript
 app.post('/webhook/', function (req, res) {
     let messaging_events = req.body.entry[0].messaging
@@ -124,10 +143,7 @@ app.post('/webhook/', function (req, res) {
 })
 ```
 
-
-## **Step 9**
-
-### Create function sendTextMessage()
+#### 2. Create function to send text messages
 ```javascript
 function sendTextMessage(sender, text) {
     let messageData = { text:text }
@@ -147,37 +163,30 @@ function sendTextMessage(sender, text) {
 	    }
     })
 }
-
 ```
 
-## **Step 10**
+---
 
-### Restart node
+### STEP IV: AUTHENTICATION
 
-```
-node index.js
-```
+#### 1. Improve Authentication
 
-## **Step 11**
-
-### Improve Authentication
-
-1. Add crypto library
+a. Add crypto library
 ```javascript
 const crypto = require('crypto')
 ```
 
-2. Add APP Secret
+b. Add APP Secret
 ```javascript
 const AppSecret = 'APP_YOUR_SECRET';
 ```
 
-3. Check first
+c. Check first
 ```javascript
 app.use(bodyParser.json({verify: verifyRequestSignature}))
 ```
 
-4. Add function to verify
+d. Add function to verify
 ```javascript
 function verifyRequestSignature(req, res, buf){
   let signature = req.headers["x-hub-signature"];
@@ -200,10 +209,11 @@ function verifyRequestSignature(req, res, buf){
 
 ```
 
+---
 
-## **Step 12**
+### STEP V: IMPROVE
 
-Improve code above!
+#### 1. Improve code above!
 
 ```javascript
 app.post('/webhook/', function (req, res) {
@@ -223,9 +233,7 @@ app.post('/webhook/', function (req, res) {
 })
 ```
 
-## **Step 13**
-
-Improve Again!
+#### 2. Improve Again!
 
 ```javascript
 function sendTextMessage(sender, text) {
