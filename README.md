@@ -1,41 +1,49 @@
-# How to build Facebook BOT Messenger
+# How to build Facebook BOT Messenger with Ngrok
 
-## What is needed ?
+This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](https://github.com/fb-masterclass-jakarta/step-create-bot-messenger)
 
+## What is needed?
+
+- NodeJS
 - Facebook Page
 - Facebook App
-- Webhook to Service
-- heroku-cli (*optional*)
+- Webhook Service
+- Ngrok (*optional*)
 
 
 ## **Step 1**
 
-### we will build Webhook Service and deployment using Heroku as cloud service  
+### Install NodeJS, NPM and Express
 
-- make sure you have 
-[Toolbet Heroku](https://devcenter.heroku.com/articles/heroku-cli) and account 
-[Heroku](https://www.heroku.com)
+1. Download and install **NodeJS** from official website: https://nodejs.org/.
 
+2. Check version.
+```sh
+node -v
 ```
-npm install -g heroku-cli
-heroku --version
-heroku login
-```
-## **STEP 2**
 
-### build webhook service with express
-
-```
-mkdir buildBot
-cd buildBot
+3. Create directory and create service with Express.
+```sh
+mkdir bot
+cd bot
 npm init
 npm install express request body-parser --save
+```
 
+## **Step 2**
+
+### Install and run Ngrok
+
+1. Download and install **Ngrok** from official website: https://ngrok.com/
+
+2. Unzip from a terminal to any directory. On Windows, just double click ngrok.zip.
+```sh
+unzip /path/to/ngrok.zip
 ```
 
 ## **Step 3**
 
-### create file **index.js**
+### Create file **index.js**
 
 ```javascript
 const express = require('express')
@@ -66,59 +74,41 @@ app.listen(app.get('port'), function() {
 
 ```
 
+
 ## **Step 4**
 
-### create file **Procfile**
+### Create Facebook Page
 
-```
-web: node index.js
-```
+1. Click https://www.facebook.com/pages/create
+
 
 ## **Step 5**
 
-### lets deploy to heroku
+### Create Facebook App
 
-```
-git init
-git add .
-git commit --message "first upload"
-heroku create
-git push heroku master
+1. Click https://developers.facebook.com/apps/
 
-```
-*and try access heroku server*
+2. Add Product **Facebook Messenger**
+
 
 ## **Step 6**
 
-Create Facebook Page = https://www.facebook.com/pages/create
-
-## **Step 7**
-
-Create Facebook App =  https://developers.facebook.com/apps/
-
-Add Product **Facebook Messenger**
-
-## **Step 8**
-
-Click **Setup Webhook** and put URL of your Heroku Server
-
-## **Step 9**
-
-### test connection
+### Test connection
 
 ```
 curl -X POST "https://graph.facebook.com/v2.10/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
 ```
 
-## **Step 10**
+## **Step 7**
 
-### add AccessToken 
+### Add AccessToken 
 ```javascript
 const token = "<PAGE_ACCESS_TOKEN>"
 ```
 
+## **Step 8**
 
-### bot sending messege
+### Add bot sending message
 ```javascript
 app.post('/webhook/', function (req, res) {
     let messaging_events = req.body.entry[0].messaging
@@ -132,7 +122,13 @@ app.post('/webhook/', function (req, res) {
     }
     res.sendStatus(200)
 })
+```
 
+
+## **Step 9**
+
+### Create function sendTextMessage()
+```javascript
 function sendTextMessage(sender, text) {
     let messageData = { text:text }
     request({
@@ -154,36 +150,34 @@ function sendTextMessage(sender, text) {
 
 ```
 
+## **Step 10**
+
+### Restart node
+
+```
+node index.js
+```
+
 ## **Step 11**
-
-### deploy heroku again
-
-```
-git add .
-git commit -m 'updated the bot to speak'
-git push heroku master	
-```
-
-## **Step 12**
 
 ### Improve Authentication
 
-add crypto library
+1. Add crypto library
 ```javascript
 const crypto = require('crypto')
 ```
 
-type app secret
+2. Add APP Secret
 ```javascript
 const AppSecret = 'APP_YOUR_SECRET';
 ```
 
-check first
+3. Check first
 ```javascript
 app.use(bodyParser.json({verify: verifyRequestSignature}))
 ```
 
-add function to verivy
+4. Add function to verify
 ```javascript
 function verifyRequestSignature(req, res, buf){
   let signature = req.headers["x-hub-signature"];
@@ -206,9 +200,10 @@ function verifyRequestSignature(req, res, buf){
 
 ```
 
-## **Step 13**
 
-Lets Improve!
+## **Step 12**
+
+Improve code above!
 
 ```javascript
 app.post('/webhook/', function (req, res) {
@@ -228,9 +223,9 @@ app.post('/webhook/', function (req, res) {
 })
 ```
 
-## **Step 14**
+## **Step 13**
 
-Improve Again !
+Improve Again!
 
 ```javascript
 function sendTextMessage(sender, text) {
@@ -264,92 +259,4 @@ function sendTextMessage(sender, text) {
     }
   })
 }
-```
-
-# GraphAPI Testing
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{
-  "recipient": {
-    "id": "<SENDER_ID>"
-  },
-  "message": {
-    "text": "hello, world!"
-  }
-}' "https://graph.facebook.com/v2.6/me/messages?access_token=<ACCESS_TOKEN>"
-
-```
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{
-  "recipient": {
-    "phone_number": "+6281********"
-  },
-  "message": {
-    "text": "hello saya nyobain ya"
-  }
-}' "https://graph.facebook.com/v2.6/me/messages?access_token=<ACCESS_TOKEN>"
-```
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{
-  "recipient": {
-    "id": "<SENDER_ID>"
-  },
-  "message": {
-  "attachment":{
-    "type": "audio",
-    "payload":{
-      "url":"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-      }
-    }
-  }
-}' "https://graph.facebook.com/v2.6/me/messages?access_token=<ACCESS_TOKEN>"
-```
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{
-  "recipient": {
-    "id": "<SENDER_ID>"
-  },
-  "message": {
-  "attachment":{
-    "type": "image",
-    "payload":{
-      "url":"https://scontent-sit4-1.xx.fbcdn.net/v/t1.0-9/19113629_1549630381745758_3709583968208622335_n.jpg?oh=c8dca7028d3be6a8515d6753b0adae9f&oe=5A42A45A"
-    }
-  }
-  }
-}' "https://graph.facebook.com/v2.6/me/messages?access_token=<ACCESS_TOKEN>"
-```
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{
-  "recipient": {
-    "id": "<SENDER_ID>"
-  },
-  "message": {
-attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "touch",
-            subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/touch/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for second bubble",
-            }]
-          }]
-        }
-      }  
-}
-}' "https://graph.facebook.com/v2.6/me/messages?access_token=<ACCESS_TOKEN>"
-
 ```
