@@ -20,84 +20,84 @@ This repo is forked from [fb-masterclass-jakarta/step-create-bot-messenger](http
 
 #### 1. Install NodeJS, NPM and Express
 
-a. Download and install **NodeJS** from official website: https://nodejs.org/.
+  a. Download and install **NodeJS** from official website: https://nodejs.org/.
 
-b. Check version.
-```sh
-node -v
-```
+  b. Check version.
+  ```sh
+  node -v
+  ```
 
-c. Install latest **npm**
-```sh
-npm install npm -g
-```
+  c. Install latest **npm**
+  ```sh
+  npm install npm -g
+  ```
 
-d. Create directory anywhere
-```sh
-mkdir myBot
-cd myBot
-npm init
-```
+  d. Create directory anywhere
+  ```sh
+  mkdir myBot
+  cd myBot
+  npm init
+  ```
 
-e. Install Express is for the server, request is for sending out messages and body-parser is to process messages
-```sh
-npm install express request body-parser --save
-```
+  e. Install Express is for the server, request is for sending out messages and body-parser is to process messages
+  ```sh
+  npm install express request body-parser --save
+  ```
 
 
 #### 2. Install and Run Ngrok
 
-a. Download and install **Ngrok** from official website: https://ngrok.com/
+  a. Download and install **Ngrok** from official website: https://ngrok.com/
 
-b. Unzip from a terminal to any directory. On Windows, just double click ngrok.zip.
-```sh
-unzip /path/to/ngrok.zip
-```
+  b. Unzip from a terminal to any directory. On Windows, just double click ngrok.zip.
+  ```sh
+  unzip /path/to/ngrok.zip
+  ```
 
-c. Start the **ngrok**
-```sh
-ngrok http 5000
-```
+  c. Start the **ngrok**
+  ```sh
+  ngrok http 5000
+  ```
 
 
 #### 3. Create file index.js
 
-a. Create file **index.js**
+  a. Create file **index.js**
 
-```javascript
-'use strict'
+  ```javascript
+  'use strict'
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const request = require('request')
-const app = express()
+  const express = require('express')
+  const bodyParser = require('body-parser')
+  const request = require('request')
+  const app = express()
 
-app.set('port', (process.env.PORT || 5000))
+  app.set('port', (process.env.PORT || 5000))
 
-// Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
+  // Process application/x-www-form-urlencoded
+  app.use(bodyParser.urlencoded({extended: false}))
 
-// Process application/json
-app.use(bodyParser.json())
+  // Process application/json
+  app.use(bodyParser.json())
 
-// Index route
-app.get('/', function (req, res) {
-	res.send('Hello world, I am a chat bot')
-})
+  // Index route
+  app.get('/', function (req, res) {
+    res.send('Hello world, I am a chat bot')
+  })
 
-// for Facebook verification
-app.get('/webhook/', function (req, res) {
-	if (req.query['hub.verify_token'] === 'make_indonesian_great_again') {
-		res.send(req.query['hub.challenge'])
-	}
-	res.send('Error, wrong token')
-})
+  // for Facebook verification
+  app.get('/webhook/', function (req, res) {
+    if (req.query['hub.verify_token'] === 'make_indonesian_great_again') {
+      res.send(req.query['hub.challenge'])
+    }
+    res.send('Error, wrong token')
+  })
 
-// Spin up the server
-app.listen(app.get('port'), function() {
-	console.log('running on port', app.get('port'))
-})
-```
+  // Spin up the server
+  app.listen(app.get('port'), function() {
+    console.log('running on port', app.get('port'))
+  })
+  ```
 
 ---
 
@@ -105,18 +105,18 @@ app.listen(app.get('port'), function() {
 
 #### 1. Create Facebook Page
 
-a. Click https://www.facebook.com/pages/create
+  a. Click https://www.facebook.com/pages/create
 
 #### 2. Create Facebook App
 
-a. Click https://developers.facebook.com/apps/
+  a. Click https://developers.facebook.com/apps/
 
-b. Add Product **Facebook Messenger**
+  b. Add Product **Facebook Messenger**
 
-c. Test connection
-```sh
-curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
-```
+  c. Test connection
+  ```sh
+  curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
+  ```
 
 ---
 
@@ -171,43 +171,42 @@ function sendTextMessage(sender, text) {
 
 #### 1. Improve Authentication
 
-a. Add crypto library
-```javascript
-const crypto = require('crypto')
-```
+  a. Add crypto library
+  ```javascript
+  const crypto = require('crypto')
+  ```
 
-b. Add APP Secret
-```javascript
-const AppSecret = 'APP_YOUR_SECRET';
-```
+  b. Add APP Secret
+  ```javascript
+  const AppSecret = 'APP_YOUR_SECRET';
+  ```
 
-c. Check first
-```javascript
-app.use(bodyParser.json({verify: verifyRequestSignature}))
-```
+  c. Check first
+  ```javascript
+  app.use(bodyParser.json({verify: verifyRequestSignature}))
+  ```
 
-d. Add function to verify
-```javascript
-function verifyRequestSignature(req, res, buf){
-  let signature = req.headers["x-hub-signature"];
-  
-  if(!signature){
-    console.error('You dont have signature')
-  } else {
-    let element = signature.split('=')
-    let method = element[0]
-    let signatureHash = element[1]
-    let expectedHash = crypto.createHmac('sha1', AppSecret).update(buf).digest('hex')
+  d. Add function to verify
+  ```javascript
+  function verifyRequestSignature(req, res, buf){
+    let signature = req.headers["x-hub-signature"];
+    
+    if(!signature){
+      console.error('You dont have signature')
+    } else {
+      let element = signature.split('=')
+      let method = element[0]
+      let signatureHash = element[1]
+      let expectedHash = crypto.createHmac('sha1', AppSecret).update(buf).digest('hex')
 
-    console.log('signatureHash = ', signatureHash)
-    console.log('expectedHash = ', expectedHash)
-    if(signatureHash != expectedHash){
-      console.error('signature invalid, send message to email or save as log')
+      console.log('signatureHash = ', signatureHash)
+      console.log('expectedHash = ', expectedHash)
+      if(signatureHash != expectedHash){
+        console.error('signature invalid, send message to email or save as log')
+      }
     }
   }
-}
-
-```
+  ```
 
 ---
 
