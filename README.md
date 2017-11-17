@@ -119,7 +119,18 @@ node index.js
 
   c. Test connection
   ```sh
-  curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=<PAGE_ACCESS_TOKEN>"
+  curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=PAGE_ACCESS_TOKEN"
+  ```
+
+#### 3. Set up Webhook
+
+  a. Click **Messenger - Settings**
+
+  b. Click **Setup Webhooks**
+
+  c. Add URL from **ngrok**
+  ```sh
+  https://blabla.ngrok.io
   ```
 
 ---
