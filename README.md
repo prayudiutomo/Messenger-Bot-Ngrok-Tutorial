@@ -133,6 +133,11 @@ node index.js
   https://blabla.ngrok.io
   ```
 
+#### 4. Open a browser and verify that your webhook is reachable
+```sh
+  https://blabla.ngrok.io/webhook
+  ```
+
 ---
 
 ### STEP III: SETUP THE BOT
